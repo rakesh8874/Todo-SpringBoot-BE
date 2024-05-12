@@ -1,0 +1,32 @@
+#User Service Is Running On This Port Number
+server:
+  port: 8092
+
+#Configuration for Spring Assigning Name To User Service and Configuring MySQl Database including Hibernate
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:mysql://mysql-service:3306/userAuthenticationDetails?createDatabaseIfNotExist=true                         #mysql-service
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+
+                                                                   #spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+  rabbitmq:
+    username: admin
+    password: admin2017
+
+#Registering User Service With Eureka Server
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+

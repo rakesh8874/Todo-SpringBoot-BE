@@ -1,0 +1,189 @@
+#version: "3.9"
+#services:
+#  mysql-service:
+#    image: mysql:latest
+#    ports:
+#      - "3306:3306"
+#    container_name: mysql-container
+#    networks:
+#      - user-net
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root
+#      MYSQL_USERNAME: root
+#      MYSQL_PASSWORD: root
+#      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+#
+#  user-service:
+#    container_name: user-authentication-service
+#    build: UserService/
+#    networks:
+#      - user-net
+#    ports:
+#      - "8090:8090"
+#    depends_on:
+#      - mysql-service
+#      - api-gateway
+#      - eureka-service
+#    restart: always
+#
+#  mongodb-service:
+#    image: mongo:latest
+#    ports:
+#      - "27017:27017"
+#    container_name: mongodb-container
+#    networks:
+#      - user-net
+#
+#  todo-service:
+#    container_name: todo-service-container
+#    build: TodoService/
+#    networks:
+#      - user-net
+#    ports:
+#      - "8091:8091"
+#    depends_on:
+#      - mongodb-service
+#      - api-gateway
+#      - eureka-service
+#    restart: always
+#
+#  eureka-service:
+#    container_name: eureka-service-container
+#    build: EurekaServer/
+#    networks:
+#      - user-net
+#    ports:
+#      - 8761:8761
+#
+#  api-gateway:
+#    container_name: api-gateway
+#    build: ApiGateway/
+#    networks:
+#      - user-net
+#    ports:
+#      - "8095:8095"
+#    depends_on:
+#       - eureka-service
+#
+#  archive-service:
+#    container_name: archive-service-container
+#    build: ArchiveService/
+#    networks:
+#     - user-net
+#    ports:
+#     - 8097:8097
+#    depends_on:
+#     - mongodb-service
+#     - eureka-service
+#     - api-gateway
+#
+#  email-service:
+#    container_name: email-service-container
+#    build: MailService/
+#    networks:
+#     - user-net
+#    ports:
+#     - "5678:5678"
+#    depends_on:
+#       - eureka-service
+#       - api-gateway
+#
+#
+#networks:
+#  user-net:
+#    driver: bridge
+
+
+version: "3.9"
+services:
+  mongodb-service:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    container_name: mongodb-service
+    networks:
+      - user-net
+
+  user-service:
+    container_name: user-service-container
+    build: UserService/
+    restart: always
+    ports:
+      - "8092:8092"
+    depends_on:
+      - mysql-service
+      - eureka-service
+      - api-gateway
+
+  mysql-service:
+    image: mysql:latest
+    ports:
+      - "3307:3307"
+    container_name: mysql-container
+    networks:
+      - user-net
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+
+  api-gateway:
+    container_name: api-gateway-container
+    build: ApiGateway/
+    restart: always
+    networks:
+        - user-net
+    ports:
+      - "8095:8095"
+    depends_on:
+      - eureka-service
+
+  eureka-service:
+    image: eureka-service
+    build: EurekaServer/
+    networks:
+      - user-net
+    ports:
+      - "8761:8761"
+
+  archive-service:
+    container_name: archive-service-container
+    build: ArchiveService/
+    networks:
+      - user-net
+    ports:
+      - "8097:8097"
+    depends_on:
+      - mongodb-service
+      - eureka-service
+      - api-gateway
+
+
+  todo-service:
+    container_name: todo-service-container
+    build: TodoService/
+    networks:
+      - user-net
+    ports:
+      - "8091:8091"
+    depends_on:
+      - mongodb-service
+      - eureka-service
+      - api-gateway
+
+
+  email-service:
+    container_name: email-service-container
+    build: MailService/
+    networks:
+      - user-net
+    ports:
+      - "5678:5678"
+    depends_on:
+      - eureka-service
+      - api-gateway
+
+networks:
+  user-net:
+    driver: bridge
